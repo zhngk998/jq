@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>车辆调度地图 - 玛西尔景区电动车租赁系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=1671538ab024a8dd4c3eeda22f81f3d1&plugin=AMap.MarkerClusterer"></script>
+    <style>
+        :root {
+            --primary-color: #007AFF;
+            --secondary-color: #5856D6;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --danger-color: #FF3B30;
+            --light-gray: #F2F2F7;
+            --dark-gray: #8E8E93;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #F2F2F7;
+        }
+
+        .app-container {
+            max-width: 768px;
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            position: relative;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .header {
+            background-color: white;
+            padding: 0 16px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 768px;
+        }
+
+        .header h1 {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .map-container {
+            position: fixed;
+            top: 44px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            height: calc(100% - 94px);
+            width: 100%;
+            max-width: 768px;
+            background: #fff;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        .map-controls {
+            position: absolute;
+            right: 12px;
+            bottom: 70px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .map-control-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: white;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+            font-size: 16px;
+            padding: 0;
+        }
+
+        .vehicle-info {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 16px;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: 100;
+            display: none;
+            transition: transform 0.3s ease-out;
+            transform: translateY(100%);
+            width: 100%;
+            max-width: 768px;
+        }
+
+        .vehicle-info.show {
+            transform: translateY(0);
+        }
+
+        .vehicle-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #000;
+        }
+
+        .vehicle-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-available {
+            background-color: rgba(52, 199, 89, 0.1);
+            color: var(--success-color);
+        }
+
+        .status-charging {
+            background-color: rgba(255, 149, 0, 0.1);
+            color: var(--warning-color);
+        }
+
+        .status-maintenance {
+            background-color: rgba(255, 59, 48, 0.1);
+            color: var(--danger-color);
+        }
+
+        .vehicle-details {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: var(--dark-gray);
+        }
+
+        .detail-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            box-shadow: 0 -1px 0 rgba(0,0,0,0.1);
+            z-index: 100;
+            height: 50px;
+            width: 100%;
+            max-width: 768px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-size: 10px;
+            padding: 4px 0;
+        }
+
+        .tab-item.active {
+            color: var(--primary-color);
+        }
+
+        .tab-item i {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+
+        .amap-icon img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .vehicle-marker {
+            position: relative;
+        }
+
+        .vehicle-marker .battery {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .vehicle-marker .battery.low {
+            background: rgba(255, 59, 48, 0.9);
+        }
+
+        .vehicle-marker .battery.medium {
+            background: rgba(255, 149, 0, 0.9);
+        }
+
+        .vehicle-marker .battery.high {
+            background: rgba(52, 199, 89, 0.9);
+        }
+
+        /* 适配 iPhone 安全区域 */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .tabbar {
+                padding-bottom: env(safe-area-inset-bottom);
+                height: calc(50px + env(safe-area-inset-bottom));
+            }
+            
+            .map-container {
+                bottom: calc(50px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>车辆调度地图</h1>
+        </div>
+
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="map-controls">
+                <button class="control-btn" onclick="zoomIn()">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+                <button class="control-btn" onclick="zoomOut()">
+                    <i class="bi bi-dash-lg"></i>
+                </button>
+                <button class="control-btn" onclick="locateMe()">
+                    <i class="bi bi-geo-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="vehicleInfo" class="vehicle-info">
+            <div class="vehicle-title">EV-001</div>
+            <div class="vehicle-status status-available">可用</div>
+            <div class="vehicle-details">
+                <div class="detail-item">
+                    <span class="detail-label">电量</span>
+                    <span class="detail-value">85%</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">里程</span>
+                    <span class="detail-value">125km</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">最后更新</span>
+                    <span class="detail-value">5分钟前</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">位置</span>
+                    <span class="detail-value">A区停车场</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabbar">
+            <a href="index.html" class="tab-item">
+                <i class="bi bi-list-task"></i>
+                <span>任务</span>
+            </a>
+            <a href="map.html" class="tab-item active">
+                <i class="bi bi-map"></i>
+                <span>地图</span>
+            </a>
+            <a href="charging.html" class="tab-item">
+                <i class="bi bi-lightning-charge"></i>
+                <span>充电</span>
+            </a>
+            <a href="profile.html" class="tab-item">
+                <i class="bi bi-person"></i>
+                <span>我的</span>
+            </a>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // 等待页面加载完成
+        window.onload = function() {
+            // 初始化地图
+            initMap();
+        };
+    </script>
+
+    <script>
+        let map;
+        let markers = [];
+        let vehicleInfo = document.querySelector('.vehicle-info');
+
+        // 初始化地图
+        function initMap() {
+            // 计算所有车辆和充电站的中心点
+            const allPositions = [
+                // 车辆位置
+                [112.982279, 28.19409],  // EV-001
+                [112.983279, 28.19309],  // EV-002
+                [112.981279, 28.19509],  // EV-003
+                // 充电站位置
+                [112.982279, 28.19409],  // CS-001
+                [112.983279, 28.19309],  // CS-002
+                // 充电桩位置
+                [112.982279, 28.19409],  // CP-001
+                [112.982379, 28.19409],  // CP-002
+                [112.983279, 28.19309],  // CP-003
+                [112.983379, 28.19309]   // CP-004
+            ];
+
+            // 计算中心点
+            const center = allPositions.reduce((acc, pos) => {
+                return [acc[0] + pos[0], acc[1] + pos[1]];
+            }, [0, 0]).map(coord => coord / allPositions.length);
+
+            // 初始化地图
+            map = new AMap.Map('map', {
+                zoom: 17,  // 增加缩放级别
+                center: center,
+                viewMode: '3D',
+                pitch: 50  // 添加俯仰角
+            });
+
+            // 添加地图控件
+            map.addControl(new AMap.Scale());
+            map.addControl(new AMap.ToolBar());
+
+            // 创建车辆图层
+            const vehicleLayer = new AMap.MarkerClusterer(map, [], {
+                gridSize: 80,
+                renderClusterMarker: function(context) {
+                    const count = context.count;
+                    const marker = context.marker;
+                    
+                    marker.setContent(`
+                        <div style="background-color: rgba(0, 122, 255, 0.8); color: white; 
+                             width: 40px; height: 40px; border-radius: 20px; 
+                             display: flex; align-items: center; justify-content: center;
+                             font-size: 14px; font-weight: bold;">
+                            ${count}
+                        </div>
+                    `);
+                }
+            });
+
+            // 创建充电站图层
+            const chargingLayer = new AMap.MarkerClusterer(map, [], {
+                gridSize: 80,
+                renderClusterMarker: function(context) {
+                    const count = context.count;
+                    const marker = context.marker;
+                    
+                    marker.setContent(`
+                        <div style="background-color: rgba(255, 149, 0, 0.8); color: white; 
+                             width: 40px; height: 40px; border-radius: 20px; 
+                             display: flex; align-items: center; justify-content: center;
+                             font-size: 14px; font-weight: bold;">
+                            ${count}
+                        </div>
+                    `);
+                }
+            });
+
+            // 模拟车辆数据
+            const vehicles = [
+                {
+                    id: 'EV-001',
+                    position: [112.982279, 28.19409],
+                    status: 'available',
+                    battery: 65,
+                    location: 'A区停车场',
+                    lastUpdate: '10分钟前'
+                },
+                {
+                    id: 'EV-002',
+                    position: [112.983279, 28.19309],
+                    status: 'charging',
+                    battery: 30,
+                    location: 'B区充电站',
+                    lastUpdate: '5分钟前'
+                },
+                {
+                    id: 'EV-003',
+                    position: [112.981279, 28.19509],
+                    status: 'maintenance',
+                    battery: 45,
+                    location: 'C区维修点',
+                    lastUpdate: '15分钟前'
+                }
+            ];
+
+            // 模拟充电站数据
+            const chargingStations = [
+                {
+                    id: 'CS-001',
+                    name: 'A区充电站',
+                    position: [112.982279, 28.19409],
+                    piles: [
+                        { id: 'CP-001', status: 'available', position: [112.982279, 28.19409] },
+                        { id: 'CP-002', status: 'in-use', position: [112.982379, 28.19409] }
+                    ]
+                },
+                {
+                    id: 'CS-002',
+                    name: 'B区充电站',
+                    position: [112.983279, 28.19309],
+                    piles: [
+                        { id: 'CP-003', status: 'available', position: [112.983279, 28.19309] },
+                        { id: 'CP-004', status: 'in-use', position: [112.983379, 28.19309] }
+                    ]
+                }
+            ];
+
+            // 添加车辆标记
+            const vehicleMarkers = vehicles.map(vehicle => {
+                const marker = new AMap.Marker({
+                    position: vehicle.position,
+                    content: createVehicleMarker(vehicle),
+                    offset: new AMap.Pixel(-16, -16),
+                    zIndex: 100,
+                    extData: vehicle
+                });
+
+                marker.on('click', () => {
+                    showVehicleInfo(vehicle);
+                });
+
+                return marker;
+            });
+
+            // 添加充电站和充电桩标记
+            const chargingMarkers = [];
+            chargingStations.forEach(station => {
+                // 添加充电站标记
+                const stationMarker = new AMap.Marker({
+                    position: station.position,
+                    content: createChargingStationMarker(station),
+                    offset: new AMap.Pixel(-18, -18),
+                    zIndex: 90,
+                    extData: station
+                });
+
+                chargingMarkers.push(stationMarker);
+
+                // 添加充电桩标记
+                station.piles.forEach(pile => {
+                    const pileMarker = new AMap.Marker({
+                        position: pile.position,
+                        content: createChargingPileMarker(pile),
+                        offset: new AMap.Pixel(-14, -14),
+                        zIndex: 80,
+                        extData: pile
+                    });
+
+                    chargingMarkers.push(pileMarker);
+                });
+            });
+
+            // 将标记添加到对应的图层
+            vehicleLayer.addMarkers(vehicleMarkers);
+            chargingLayer.addMarkers(chargingMarkers);
+
+            // 添加图例
+            const legend = new AMap.Control({
+                position: 'topright',
+                content: `
+                    <div style="background: white; padding: 10px; border-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                        <div style="margin-bottom: 8px;">
+                            <i class="bi bi-car-front" style="color: #007AFF;"></i>
+                            <span style="margin-left: 8px;">车辆</span>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <i class="bi bi-lightning-charge" style="color: #007AFF;"></i>
+                            <span style="margin-left: 8px;">充电站</span>
+                        </div>
+                        <div>
+                            <i class="bi bi-plug" style="color: #FF9500;"></i>
+                            <span style="margin-left: 8px;">充电桩</span>
+                        </div>
+                    </div>
+                `
+            });
+            map.addControl(legend);
+
+            // 调整地图视野以包含所有标记
+            map.setFitView();
+        }
+
+        // 创建车辆标记
+        function createVehicleMarker(vehicle) {
+            const markerContent = document.createElement('div');
+            markerContent.className = 'vehicle-marker';
+            
+            // 创建电池电量显示
+            const batteryDiv = document.createElement('div');
+            batteryDiv.className = 'battery';
+            batteryDiv.textContent = `${vehicle.battery}%`;
+            
+            // 根据电量设置样式
+            if (vehicle.battery <= 20) {
+                batteryDiv.classList.add('low');
+            } else if (vehicle.battery <= 50) {
+                batteryDiv.classList.add('medium');
+            } else {
+                batteryDiv.classList.add('high');
+            }
+            
+            markerContent.appendChild(batteryDiv);
+
+            // 创建车辆图标
+            const icon = document.createElement('img');
+            icon.src = 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png';
+            markerContent.appendChild(icon);
+
+            return markerContent;
+        }
+
+        // 创建充电站标记
+        function createChargingStationMarker(station) {
+            const div = document.createElement('div');
+            div.className = 'charging-station-marker';
+            div.innerHTML = '<i class="bi bi-lightning-charge"></i>';
+            return div;
+        }
+
+        // 创建充电桩标记
+        function createChargingPileMarker(pile) {
+            const div = document.createElement('div');
+            div.className = `charging-pile-marker ${pile.status}`;
+            div.innerHTML = '<i class="bi bi-plug"></i>';
+            return div;
+        }
+
+        // 显示车辆信息
+        function showVehicleInfo(vehicle) {
+            const vehicleInfo = document.getElementById('vehicleInfo');
+            vehicleInfo.style.display = 'block';
+            
+            // 更新车辆信息
+            vehicleInfo.querySelector('.vehicle-title').textContent = vehicle.id;
+            const statusText = 
+                vehicle.status === 'available' ? '可用' :
+                vehicle.status === 'charging' ? '充电中' : '维修中';
+            const statusClass = 
+                vehicle.status === 'available' ? 'status-available' :
+                vehicle.status === 'charging' ? 'status-charging' : 'status-maintenance';
+            
+            const statusElement = vehicleInfo.querySelector('.vehicle-status');
+            statusElement.textContent = statusText;
+            statusElement.className = `vehicle-status ${statusClass}`;
+            
+            // 更新详细信息
+            const details = vehicleInfo.querySelectorAll('.detail-value');
+            details[0].textContent = `${vehicle.battery}%`;
+            details[1].textContent = `${vehicle.location}`;
+            details[2].textContent = vehicle.lastUpdate;
+
+            // 添加显示动画
+            setTimeout(() => {
+                vehicleInfo.classList.add('show');
+            }, 10);
+        }
+
+        // 地图控制函数
+        function locateUser() {
+            if (map) {
+                map.setZoom(16);
+                map.setCenter([112.982279, 28.19409]);
+            }
+        }
+
+        function zoomIn() {
+            if (map) {
+                map.zoomIn();
+            }
+        }
+
+        function zoomOut() {
+            if (map) {
+                map.zoomOut();
+            }
+        }
+    </script>
+</body>
+</html> 

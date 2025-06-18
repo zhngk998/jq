@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>玛西尔景区电动车租赁系统 - 产品导航</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007AFF;
+            --secondary-color: #5856D6;
+            --success-color: #34C759;
+            --background-color: #F2F2F7;
+            --card-background: #FFFFFF;
+            --text-primary: #000000;
+            --text-secondary: #8E8E93;
+            --border-radius: 12px;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background-color: var(--background-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+
+        .system-card {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s;
+        }
+
+        .system-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .system-card h2 {
+            color: var(--text-primary);
+            font-size: 24px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .system-card h2 i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        .system-card p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .feature-list li i {
+            color: var(--success-color);
+            margin-right: 10px;
+        }
+
+        .btn-access {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-access:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .system-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .contact-info {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .contact-info h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .contact-info p {
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>景区共享电动车系统</h1>
+            <p>智能化景区交通解决方案</p>
+        </div>
+
+        <div class="system-grid">
+            <!-- 用户端小程序 -->
+            <div class="system-card">
+                <h2><i class="bi bi-phone"></i> 用户端小程序</h2>
+                <p>为游客提供便捷的电动车租赁服务</p>
+                <ul class="feature-list">
+                    <li><i class="bi bi-check-circle"></i> 实时车辆定位</li>
+                    <li><i class="bi bi-check-circle"></i> 扫码用车</li>
+                    <li><i class="bi bi-check-circle"></i> 智能导航</li>
+                    <li><i class="bi bi-check-circle"></i> 在线支付</li>
+                    <li><i class="bi bi-check-circle"></i> 紧急求助</li>
+                </ul>
+                <a href="index.html" class="btn-access">访问演示</a>
+            </div>
+
+            <!-- 管理后台 -->
+            <div class="system-card">
+                <h2><i class="bi bi-laptop"></i> 管理后台</h2>
+                <p>为管理人员提供全面的业务运营管理工具</p>
+                <ul class="feature-list">
+                    <li><i class="bi bi-check-circle"></i> 运营数据分析</li>
+                    <li><i class="bi bi-check-circle"></i> 单车运营效率分析</li>
+                    <li><i class="bi bi-check-circle"></i> 收入与回款管理</li>
+                    <li><i class="bi bi-check-circle"></i> 退费处理</li>
+                    <li><i class="bi bi-check-circle"></i> 调度指令下达</li>
+                    <li><i class="bi bi-check-circle"></i> 运营报表生成</li>
+                </ul>
+                <a href="admin/index.html" class="btn-access">访问后台</a>
+            </div>
+
+            <!-- 车辆调度 -->
+            <div class="system-card">
+                <h2><i class="bi bi-geo-alt"></i> 车辆调度</h2>
+                <p>为一线调度员提供便捷的车辆调度工具</p>
+                <ul class="feature-list">
+                    <li><i class="bi bi-check-circle"></i> 车辆位置实时查看</li>
+                    <li><i class="bi bi-check-circle"></i> 热门区域车辆调度</li>
+                    <li><i class="bi bi-check-circle"></i> 车辆充电管理</li>
+                    <li><i class="bi bi-check-circle"></i> 故障报修处理</li>
+                    <li><i class="bi bi-check-circle"></i> 调度任务接收</li>
+                </ul>
+                <a href="dispatch/index.html" class="btn-access">访问调度系统</a>
+            </div>
+        </div>
+
+        <div class="contact-info">
+            <h3>联系我们</h3>
+            <p><i class="bi bi-envelope"></i>邮箱： kai.zhang@rootcloud.com</p>
+            <p><i class="bi bi-telephone"></i> 电话：15111041999</p>
+            <p><i class="bi bi-clock"></i> 工作时间：周一至周日 9:00-18:00</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

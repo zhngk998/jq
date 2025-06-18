@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>任务列表 - 玛西尔景区电动车租赁系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #007AFF;
+            --secondary-color: #5856D6;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --danger-color: #FF3B30;
+            --light-gray: #F2F2F7;
+            --dark-gray: #8E8E93;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #F2F2F7;
+        }
+
+        .app-container {
+            max-width: 768px;
+            width: 100%;
+            height: 100%;
+            margin: 0 auto;
+            position: relative;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .header {
+            background-color: white;
+            padding: 0 16px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 768px;
+        }
+
+        .header h1 {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .task-container {
+            position: fixed;
+            top: 44px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 768px;
+            height: calc(100% - 94px);
+            overflow-y: auto;
+            background: #F2F2F7;
+            padding: 12px;
+        }
+
+        .task-filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border-radius: 16px;
+            background: white;
+            border: none;
+            font-size: 13px;
+            color: var(--dark-gray);
+            white-space: nowrap;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .task-type {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .type-dispatch {
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--primary-color);
+        }
+
+        .type-maintenance {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--danger-color);
+        }
+
+        .type-charging {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--warning-color);
+        }
+
+        .task-status {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .status-pending {
+            color: var(--warning-color);
+        }
+
+        .status-in-progress {
+            color: var(--primary-color);
+        }
+
+        .status-completed {
+            color: var(--success-color);
+        }
+
+        .task-info {
+            margin-bottom: 12px;
+        }
+
+        .task-info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            color: var(--dark-gray);
+            font-size: 13px;
+        }
+
+        .task-info-item i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .task-btn {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-outline {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+        }
+
+        .tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            box-shadow: 0 -1px 0 rgba(0,0,0,0.1);
+            z-index: 100;
+            height: 50px;
+            width: 100%;
+            max-width: 768px;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--dark-gray);
+            text-decoration: none;
+            font-size: 10px;
+            padding: 4px 0;
+        }
+
+        .tab-item.active {
+            color: var(--primary-color);
+        }
+
+        .tab-item i {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+
+        /* 任务详情弹窗 */
+        .task-detail {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1000;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .task-detail.show {
+            display: block;
+        }
+
+        .task-detail-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 320px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+        }
+
+        .task-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .task-detail-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--dark-gray);
+            padding: 4px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+        }
+
+        .close-btn:active {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .task-detail-info {
+            margin-bottom: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .detail-item {
+            display: flex;
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+
+        .detail-label {
+            width: 80px;
+            color: var(--dark-gray);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            flex: 1;
+            color: #000;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .task-detail-actions {
+            display: flex;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .task-detail-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+
+        .task-detail-btn:active {
+            opacity: 0.8;
+        }
+
+        /* 确认弹窗 */
+        .confirm-dialog {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1100;
+            display: none;
+            backdrop-filter: blur(4px);
+        }
+
+        .confirm-dialog.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-content {
+            width: 90%;
+            max-width: 280px;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+        }
+
+        .confirm-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .confirm-message {
+            font-size: 14px;
+            color: var(--dark-gray);
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .confirm-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+
+        .confirm-btn:active {
+            opacity: 0.8;
+        }
+
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .tabbar {
+                padding-bottom: env(safe-area-inset-bottom);
+                height: calc(50px + env(safe-area-inset-bottom));
+            }
+            
+            .task-container {
+                bottom: calc(50px + env(safe-area-inset-bottom));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>任务列表</h1>
+        </div>
+
+        <div class="task-container">
+            <div class="task-filters">
+                <button class="filter-btn active">全部</button>
+                <button class="filter-btn">待调度</button>
+                <button class="filter-btn">进行中</button>
+                <button class="filter-btn">已完成</button>
+                <button class="filter-btn">调度车辆</button>
+                <button class="filter-btn">故障处理</button>
+                <button class="filter-btn">充电</button>
+            </div>
+
+            <div class="task-list">
+                <!-- 待调度任务 -->
+                <div class="task-card">
+                    <div class="task-header">
+                        <span class="task-type type-dispatch">调度车辆</span>
+                        <span class="task-status status-pending">待调度</span>
+                    </div>
+                    <div class="task-info">
+                        <div class="task-info-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>A区停车场 → B区充电站</span>
+                        </div>
+                        <div class="task-info-item">
+                            <i class="bi bi-car-front"></i>
+                            <span>车辆编号：EV-001</span>
+                        </div>
+                        <div class="task-info-item">
+                            <i class="bi bi-clock"></i>
+                            <span>发布时间：10分钟前</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-btn btn-primary" onclick="showTaskDetail(1)">接受任务</button>
+                        <button class="task-btn btn-outline" onclick="showTaskDetail(1)">查看详情</button>
+                    </div>
+                </div>
+
+                <!-- 进行中任务 -->
+                <div class="task-card">
+                    <div class="task-header">
+                        <span class="task-type type-maintenance">故障处理</span>
+                        <span class="task-status status-in-progress">进行中</span>
+                    </div>
+                    <div class="task-info">
+                        <div class="task-info-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>C区维修点</span>
+                        </div>
+                        <div class="task-info-item">
+                            <i class="bi bi-car-front"></i>
+                            <span>车辆编号：EV-003</span>
+                        </div>
+                        <div class="task-info-item">
+                            <i class="bi bi-clock"></i>
+                            <span>开始时间：30分钟前</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-btn btn-primary" onclick="showTaskDetail(2)">完成任务</button>
+                        <button class="task-btn btn-outline" onclick="showTaskDetail(2)">查看详情</button>
+                    </div>
+                </div>
+
+                <!-- 已完成任务 -->
+                <div class="task-card">
+                    <div class="task-header">
+                        <span class="task-type type-charging">充电</span>
+                        <span class="task-status status-completed">已完成</span>
+                    </div>
+                    <div class="task-info">
+                        <div class="task-info-item">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>B区充电站 - 3号充电桩</span>
+                        </div>
+                        <div class="task-info-item">
+                            <i class="bi bi-car-front"></i>
+                            <span>车辆编号：EV-002</span>
+                        </div>
+                        <div class="task-info-item">
+                            <i class="bi bi-lightning-charge"></i>
+                            <span>充电状态：已完成</span>
+                        </div>
+                        <div class="task-info-item">
+                            <i class="bi bi-clock"></i>
+                            <span>完成时间：1小时前</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-btn btn-outline" onclick="showTaskDetail(3)">查看详情</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabbar">
+            <a href="index.html" class="tab-item active">
+                <i class="bi bi-list-task"></i>
+                <span>任务</span>
+            </a>
+            <a href="map.html" class="tab-item">
+                <i class="bi bi-map"></i>
+                <span>地图</span>
+            </a>
+            <a href="charging.html" class="tab-item">
+                <i class="bi bi-lightning-charge"></i>
+                <span>充电</span>
+            </a>
+            <a href="profile.html" class="tab-item">
+                <i class="bi bi-person"></i>
+                <span>我的</span>
+            </a>
+        </div>
+
+        <!-- 任务详情弹窗 -->
+        <div id="taskDetail" class="task-detail">
+            <div class="task-detail-content">
+                <div class="task-detail-header">
+                    <h2 class="task-detail-title">任务详情</h2>
+                    <button class="close-btn" onclick="hideTaskDetail()">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <div class="task-detail-info">
+                    <div class="detail-item">
+                        <span class="detail-label">任务类型</span>
+                        <span class="detail-value">充电</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">任务状态</span>
+                        <span class="detail-value">待调度</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">车辆编号</span>
+                        <span class="detail-value">EV-001</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">充电站</span>
+                        <span class="detail-value">B区充电站</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">充电桩</span>
+                        <span class="detail-value">3号充电桩</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">充电状态</span>
+                        <span class="detail-value">待充电</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">发布时间</span>
+                        <span class="detail-value">2024-03-20 10:30</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">任务描述</span>
+                        <span class="detail-value">将车辆调度至B区充电站3号充电桩进行充电</span>
+                    </div>
+                </div>
+                <div class="task-detail-actions">
+                    <button class="task-detail-btn btn-primary" onclick="acceptTask()">接受任务</button>
+                    <button class="task-detail-btn btn-outline" onclick="hideTaskDetail()">关闭</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 确认弹窗 -->
+        <div id="confirmDialog" class="confirm-dialog">
+            <div class="confirm-content">
+                <div class="confirm-title">确认操作</div>
+                <div class="confirm-message">确定要接受此任务吗？</div>
+                <div class="confirm-actions">
+                    <button class="confirm-btn btn-outline" onclick="hideConfirmDialog()">取消</button>
+                    <button class="confirm-btn btn-primary" onclick="confirmAction()">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟任务数据
+        const taskData = {
+            1: {
+                type: 'dispatch',
+                status: 'pending',
+                vehicleId: 'EV-001',
+                startLocation: 'A区停车场',
+                endLocation: 'B区充电站',
+                chargingPile: '3号充电桩',
+                chargingStatus: '待充电',
+                createTime: '2024-03-20 10:30',
+                description: '将车辆从A区停车场调度至B区充电站3号充电桩进行充电'
+            },
+            2: {
+                type: 'maintenance',
+                status: 'in-progress',
+                vehicleId: 'EV-003',
+                location: 'C区维修点',
+                startTime: '2024-03-20 10:00',
+                description: 'EV-003报告刹车系统异常，需要维修'
+            },
+            3: {
+                type: 'charging',
+                status: 'completed',
+                vehicleId: 'EV-002',
+                chargingStation: 'B区充电站',
+                chargingPile: '3号充电桩',
+                chargingStatus: '已完成',
+                completeTime: '2024-03-20 09:30',
+                description: 'EV-002已完成充电'
+            }
+        };
+
+        // 显示任务详情
+        function showTaskDetail(taskId) {
+            const task = taskData[taskId];
+            const taskDetail = document.getElementById('taskDetail');
+            const content = taskDetail.querySelector('.task-detail-info');
+            
+            // 清空现有内容
+            content.innerHTML = '';
+            
+            // 根据任务类型显示不同的信息
+            if (task.type === 'charging') {
+                content.innerHTML = `
+                    <div class="detail-item">
+                        <span class="detail-label">任务类型</span>
+                        <span class="detail-value">充电</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">任务状态</span>
+                        <span class="detail-value">${getStatusText(task.status)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">车辆编号</span>
+                        <span class="detail-value">${task.vehicleId}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">充电站</span>
+                        <span class="detail-value">${task.chargingStation}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">充电桩</span>
+                        <span class="detail-value">${task.chargingPile}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">充电状态</span>
+                        <span class="detail-value">${task.chargingStatus}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">${task.status === 'completed' ? '完成时间' : '发布时间'}</span>
+                        <span class="detail-value">${task.status === 'completed' ? task.completeTime : task.createTime}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">任务描述</span>
+                        <span class="detail-value">${task.description}</span>
+                    </div>
+                `;
+            } else if (task.type === 'dispatch') {
+                content.innerHTML = `
+                    <div class="detail-item">
+                        <span class="detail-label">任务类型</span>
+                        <span class="detail-value">调度车辆</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">任务状态</span>
+                        <span class="detail-value">${getStatusText(task.status)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">车辆编号</span>
+                        <span class="detail-value">${task.vehicleId}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">起始位置</span>
+                        <span class="detail-value">${task.startLocation}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">目标位置</span>
+                        <span class="detail-value">${task.endLocation}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">充电桩</span>
+                        <span class="detail-value">${task.chargingPile}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">发布时间</span>
+                        <span class="detail-value">${task.createTime}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">任务描述</span>
+                        <span class="detail-value">${task.description}</span>
+                    </div>
+                `;
+            } else if (task.type === 'maintenance') {
+                content.innerHTML = `
+                    <div class="detail-item">
+                        <span class="detail-label">任务类型</span>
+                        <span class="detail-value">故障处理</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">任务状态</span>
+                        <span class="detail-value">${getStatusText(task.status)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">车辆编号</span>
+                        <span class="detail-value">${task.vehicleId}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">维修位置</span>
+                        <span class="detail-value">${task.location}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">开始时间</span>
+                        <span class="detail-value">${task.startTime}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">任务描述</span>
+                        <span class="detail-value">${task.description}</span>
+                    </div>
+                `;
+            }
+
+            // 根据任务状态显示不同的按钮
+            const actions = taskDetail.querySelector('.task-detail-actions');
+            if (task.status === 'pending') {
+                actions.innerHTML = `
+                    <button class="task-detail-btn btn-primary" onclick="acceptTask()">接受任务</button>
+                    <button class="task-detail-btn btn-outline" onclick="hideTaskDetail()">关闭</button>
+                `;
+            } else if (task.status === 'in-progress') {
+                actions.innerHTML = `
+                    <button class="task-detail-btn btn-primary" onclick="completeTask()">完成任务</button>
+                    <button class="task-detail-btn btn-outline" onclick="hideTaskDetail()">关闭</button>
+                `;
+            } else {
+                actions.innerHTML = `
+                    <button class="task-detail-btn btn-outline" onclick="hideTaskDetail()">关闭</button>
+                `;
+            }
+
+            taskDetail.classList.add('show');
+        }
+
+        // 获取状态文本
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '待调度',
+                'in-progress': '进行中',
+                'completed': '已完成'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 隐藏任务详情
+        function hideTaskDetail() {
+            const taskDetail = document.getElementById('taskDetail');
+            taskDetail.classList.remove('show');
+        }
+
+        // 显示确认弹窗
+        function showConfirmDialog(message, callback) {
+            const dialog = document.getElementById('confirmDialog');
+            const messageEl = dialog.querySelector('.confirm-message');
+            messageEl.textContent = message;
+            dialog.classList.add('show');
+            dialog.callback = callback;
+        }
+
+        // 隐藏确认弹窗
+        function hideConfirmDialog() {
+            const dialog = document.getElementById('confirmDialog');
+            dialog.classList.remove('show');
+        }
+
+        // 确认操作
+        function confirmAction() {
+            const dialog = document.getElementById('confirmDialog');
+            if (dialog.callback) {
+                dialog.callback();
+            }
+            hideConfirmDialog();
+        }
+
+        // 接受任务
+        function acceptTask() {
+            hideTaskDetail();
+            showConfirmDialog('确定要接受此任务吗？', () => {
+                // TODO: 实现接受任务的逻辑
+                alert('任务已接受');
+            });
+        }
+
+        // 完成任务
+        function completeTask() {
+            hideTaskDetail();
+            showConfirmDialog('确定要完成此任务吗？', () => {
+                // TODO: 实现完成任务的逻辑
+                alert('任务已完成');
+            });
+        }
+
+        // 任务筛选
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                // TODO: 实现任务筛选逻辑
+            });
+        });
+    </script>
+</body>
+</html> 

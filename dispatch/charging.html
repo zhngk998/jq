@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>充电管理 - 玛西尔景区电动车租赁系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #007AFF;
+            --success: #34C759;
+            --warning: #FF9500;
+            --danger: #FF3B30;
+            --card-bg: #fff;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            --border-radius: 16px;
+            --gray: #F2F2F7;
+            --text-gray: #8E8E93;
+        }
+        body, html {
+            background: var(--gray);
+        }
+        .app-container {
+            max-width: 768px;
+            margin: 0 auto;
+            background: var(--gray);
+            min-height: 100vh;
+            font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+        }
+        .header {
+            background: #fff;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+            border-radius: 0 0 16px 16px;
+        }
+        .station-status-list {
+            margin: 12px 0 8px 0;
+            padding: 0 8px;
+            gap: 12px;
+        }
+        .station-status-card {
+            min-width: 120px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            padding: 12px 10px 10px 10px;
+            text-align: center;
+            font-size: 15px;
+            cursor: pointer;
+            transition: box-shadow 0.2s, border 0.2s, background 0.2s;
+            border: 1.5px solid #e5e5ea;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #fff;
+        }
+        .station-status-card.busy {
+            border-color: #ffe5b2;
+            background: linear-gradient(135deg, #fffbe6 60%, #fff 100%);
+        }
+        .station-status-card.free {
+            border-color: #b6f5c9;
+            background: linear-gradient(135deg, #eafff1 60%, #fff 100%);
+        }
+        .station-title {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 2px;
+            color: #222;
+        }
+        .station-info {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-bottom: 2px;
+        }
+        .station-status-card .text-success {
+            color: #34C759 !important;
+            font-weight: 500;
+        }
+        .accordion {
+            margin: 0 8px 60px 8px;
+        }
+        .accordion-item {
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            border: none;
+        }
+        .accordion-button {
+            font-size: 15px;
+            font-weight: 500;
+            background: #fff;
+            border: none;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            padding: 12px 16px;
+            outline: none;
+        }
+        .accordion-button:not(.collapsed) {
+            color: var(--primary);
+            background: #f6faff;
+            box-shadow: none;
+        }
+        .accordion-body {
+            background: #fff;
+            padding: 10px 12px 12px 12px;
+        }
+        .vehicle-card {
+            background: #f8f9fb;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            padding: 12px 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+        }
+        .vehicle-card:hover {
+            background: #e6f0ff;
+            box-shadow: 0 2px 8px rgba(0,122,255,0.08);
+        }
+        .vehicle-card .fw-bold {
+            font-size: 15px;
+            font-weight: 600;
+        }
+        .vehicle-card .small {
+            font-size: 13px;
+            color: var(--text-gray);
+        }
+        .modal-content {
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+        }
+        .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .modal-title {
+            font-size: 17px;
+            font-weight: 600;
+        }
+        .modal-body {
+            font-size: 15px;
+            color: #222;
+        }
+        .btn-close {
+            outline: none;
+        }
+        .tabbar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff;
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            box-shadow: 0 -1px 0 rgba(0,0,0,0.1);
+            z-index: 100;
+            height: 50px;
+            width: 100%;
+            max-width: 768px;
+            border-radius: 16px 16px 0 0;
+        }
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-gray);
+            text-decoration: none;
+            font-size: 10px;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+        .tab-item.active {
+            color: var(--primary);
+        }
+        .tab-item i {
+            font-size: 22px;
+            margin-bottom: 2px;
+        }
+        @media (max-width: 600px) {
+            .app-container, .tabbar {
+                max-width: 100vw;
+                border-radius: 0;
+            }
+            .header {
+                border-radius: 0;
+            }
+        }
+        /* 进度条样式 */
+        .battery-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e5ea;
+            border-radius: 6px;
+            margin: 6px 0 2px 0;
+            overflow: hidden;
+        }
+        .battery-bar-inner {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.3s;
+        }
+        .battery-bar-inner.high {
+            background: linear-gradient(90deg, #34C759 60%, #b6f5c9 100%);
+        }
+        .battery-bar-inner.medium {
+            background: linear-gradient(90deg, #FF9500 60%, #ffe5b2 100%);
+        }
+        .battery-bar-inner.low {
+            background: linear-gradient(90deg, #FF3B30 60%, #ffd6d6 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>充电管理</h1>
+        </div>
+        <!-- 顶部充电站状态卡片 -->
+        <div class="station-status-list d-flex flex-nowrap overflow-auto p-2" style="gap:12px;">
+            <div class="station-status-card busy" onclick="expandStation('A区充电站')">
+                <div class="station-title">A区充电站</div>
+                <div class="station-info">空闲2/总4</div>
+                <div class="station-info text-success">充电中2</div>
+            </div>
+            <div class="station-status-card free" onclick="expandStation('B区充电站')">
+                <div class="station-title">B区充电站</div>
+                <div class="station-info">空闲4/总4</div>
+                <div class="station-info text-success">充电中0</div>
+            </div>
+            <div class="station-status-card busy" onclick="expandStation('C区充电站')">
+                <div class="station-title">C区充电站</div>
+                <div class="station-info">空闲1/总3</div>
+                <div class="station-info text-success">充电中2</div>
+            </div>
+        </div>
+        <!-- 手风琴方式展示车辆列表 -->
+        <div class="accordion" id="chargingAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseA" aria-expanded="true">
+                        A区充电站（空闲2/总4，充电中2）
+                    </button>
+                </h2>
+                <div id="collapseA" class="accordion-collapse collapse show">
+                    <div class="accordion-body p-2">
+                        <div class="vehicle-card mb-2" onclick="showVehicleDetail('EV-001')">
+                            <div class="d-flex align-items-center w-100">
+                                <i class="bi bi-lightning-charge text-success me-2"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">EV-001</div>
+                                    <div class="battery-bar">
+                                        <div class="battery-bar-inner high" style="width:75%"></div>
+                                    </div>
+                                    <div class="small text-muted">当前电量：75% | 充电中 | 预计完成：15分钟</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vehicle-card mb-2" onclick="showVehicleDetail('EV-004')">
+                            <div class="d-flex align-items-center w-100">
+                                <i class="bi bi-lightning-charge text-success me-2"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">EV-004</div>
+                                    <div class="battery-bar">
+                                        <div class="battery-bar-inner medium" style="width:60%"></div>
+                                    </div>
+                                    <div class="small text-muted">当前电量：60% | 充电中 | 预计完成：20分钟</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseB">
+                        B区充电站（空闲4/总4，充电中0）
+                    </button>
+                </h2>
+                <div id="collapseB" class="accordion-collapse collapse">
+                    <div class="accordion-body p-2">
+                        <div class="text-muted small">暂无车辆正在充电</div>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseC">
+                        C区充电站（空闲1/总3，充电中2）
+                    </button>
+                </h2>
+                <div id="collapseC" class="accordion-collapse collapse">
+                    <div class="accordion-body p-2">
+                        <div class="vehicle-card mb-2" onclick="showVehicleDetail('EV-002')">
+                            <div class="d-flex align-items-center w-100">
+                                <i class="bi bi-lightning-charge text-success me-2"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">EV-002</div>
+                                    <div class="battery-bar">
+                                        <div class="battery-bar-inner low" style="width:20%"></div>
+                                    </div>
+                                    <div class="small text-muted">当前电量：20% | 待充电</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="vehicle-card mb-2" onclick="showVehicleDetail('EV-003')">
+                            <div class="d-flex align-items-center w-100">
+                                <i class="bi bi-lightning-charge text-success me-2"></i>
+                                <div class="flex-grow-1">
+                                    <div class="fw-bold">EV-003</div>
+                                    <div class="battery-bar">
+                                        <div class="battery-bar-inner high" style="width:100%"></div>
+                                    </div>
+                                    <div class="small text-muted">当前电量：100% | 已完成</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 车辆详情弹窗 -->
+        <div id="vehicleDetailModal" class="modal fade" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">车辆详情</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="vehicleDetailContent">加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tabbar">
+            <a href="index.html" class="tab-item">
+                <i class="bi bi-list-task"></i>
+                <span>任务</span>
+            </a>
+            <a href="map.html" class="tab-item">
+                <i class="bi bi-map"></i>
+                <span>地图</span>
+            </a>
+            <a href="charging.html" class="tab-item active">
+                <i class="bi bi-lightning-charge"></i>
+                <span>充电</span>
+            </a>
+            <a href="profile.html" class="tab-item">
+                <i class="bi bi-person"></i>
+                <span>我的</span>
+            </a>
+        </div>
+    </div>
+    <script>
+    // 充电站卡片点击联动手风琴
+    function expandStation(stationName) {
+        if(stationName.includes('A区')) {
+            var collapseA = new bootstrap.Collapse(document.getElementById('collapseA'), {toggle: true});
+            collapseA.show();
+            new bootstrap.Collapse(document.getElementById('collapseB')).hide();
+            new bootstrap.Collapse(document.getElementById('collapseC')).hide();
+        } else if(stationName.includes('B区')) {
+            var collapseB = new bootstrap.Collapse(document.getElementById('collapseB'), {toggle: true});
+            collapseB.show();
+            new bootstrap.Collapse(document.getElementById('collapseA')).hide();
+            new bootstrap.Collapse(document.getElementById('collapseC')).hide();
+        } else if(stationName.includes('C区')) {
+            var collapseC = new bootstrap.Collapse(document.getElementById('collapseC'), {toggle: true});
+            collapseC.show();
+            new bootstrap.Collapse(document.getElementById('collapseA')).hide();
+            new bootstrap.Collapse(document.getElementById('collapseB')).hide();
+        }
+    }
+    // 车辆详情弹窗
+    function showVehicleDetail(vehicleId) {
+        // 这里可根据vehicleId请求接口或查找数据
+        let html = '';
+        if(vehicleId==='EV-001') {
+            html = `<div><b>EV-001</b><br>所属：A区充电站<br>当前电量：75%<br>状态：充电中<br>预计完成：15分钟</div>`;
+        } else if(vehicleId==='EV-002') {
+            html = `<div><b>EV-002</b><br>所属：C区充电站<br>当前电量：20%<br>状态：待充电</div>`;
+        } else if(vehicleId==='EV-003') {
+            html = `<div><b>EV-003</b><br>所属：C区充电站<br>当前电量：100%<br>状态：已完成</div>`;
+        } else if(vehicleId==='EV-004') {
+            html = `<div><b>EV-004</b><br>所属：A区充电站<br>当前电量：60%<br>状态：充电中<br>预计完成：20分钟</div>`;
+        }
+        document.getElementById('vehicleDetailContent').innerHTML = html;
+        var modal = new bootstrap.Modal(document.getElementById('vehicleDetailModal'));
+        modal.show();
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

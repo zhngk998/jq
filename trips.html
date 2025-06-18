@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>玛西尔景区电动车租赁系统 - 我的行程</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <div class="custom-navbar">
+        <div class="nav-content">
+            <div class="nav-back">
+                <i class="bi bi-chevron-left"></i>
+            </div>
+            <div class="nav-title">玛西尔景区电动车租赁系统</div>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <!-- 当前行程 -->
+        <div class="current-trip">
+            <div class="trip-header">
+                <h5>当前行程</h5>
+                <div class="trip-status ongoing">进行中</div>
+            </div>
+            <div class="trip-info">
+                <div class="trip-vehicle">
+                    <i class="bi bi-bicycle"></i>
+                    <span>车辆编号：EV2024001</span>
+                </div>
+                <div class="trip-time">
+                    <i class="bi bi-clock"></i>
+                    <span>开始时间：2024-03-20 14:30</span>
+                </div>
+                <div class="trip-cost">
+                    <i class="bi bi-currency-yen"></i>
+                    <span>当前费用：¥25.50</span>
+                </div>
+                <div class="trip-duration">
+                    <i class="bi bi-hourglass-split"></i>
+                    <span>已用时长：35分钟</span>
+                </div>
+                <div class="trip-distance">
+                    <i class="bi bi-speedometer2"></i>
+                    <span>行驶里程：3.5公里</span>
+                </div>
+            </div>
+            <div class="trip-actions">
+                <button class="btn btn-danger end-trip-btn">
+                    <i class="bi bi-stop-circle"></i>
+                    结束行程
+                </button>
+            </div>
+        </div>
+
+        <!-- 历史行程 -->
+        <div class="history-trips">
+            <div class="history-header">
+                <h5>历史行程</h5>
+                <div class="history-filter">
+                    <select class="form-select">
+                        <option value="all">全部</option>
+                        <option value="week">本周</option>
+                        <option value="month">本月</option>
+                    </select>
+                </div>
+            </div>
+            <div class="trip-list">
+                <!-- 历史行程项目 -->
+                <div class="trip-item">
+                    <div class="trip-date">
+                        <div class="date">2024-03-19</div>
+                        <div class="time">15:30-16:45</div>
+                    </div>
+                    <div class="trip-details">
+                        <div class="trip-amount">¥35.00</div>
+                        <div class="trip-info">
+                            <div class="info-item">
+                                <i class="bi bi-bicycle"></i>
+                                <span>EV2024001</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-hourglass-split"></i>
+                                <span>75分钟</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>5.2公里</span>
+                            </div>
+                        </div>
+                        <div class="trip-route">
+                            <div class="route-point start">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span>景区东门</span>
+                            </div>
+                            <div class="route-line"></div>
+                            <div class="route-point end">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>景区西门</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="trip-actions">
+                        <button class="btn btn-outline-primary btn-sm" onclick="showTripDetail(1)">
+                            查看详情
+                        </button>
+                    </div>
+                </div>
+
+                <div class="trip-item">
+                    <div class="trip-date">
+                        <div class="date">2024-03-18</div>
+                        <div class="time">10:15-11:30</div>
+                    </div>
+                    <div class="trip-details">
+                        <div class="trip-amount">¥28.50</div>
+                        <div class="trip-info">
+                            <div class="info-item">
+                                <i class="bi bi-bicycle"></i>
+                                <span>EV2024002</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-hourglass-split"></i>
+                                <span>65分钟</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="bi bi-speedometer2"></i>
+                                <span>4.8公里</span>
+                            </div>
+                        </div>
+                        <div class="trip-route">
+                            <div class="route-point start">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span>景区南门</span>
+                            </div>
+                            <div class="route-line"></div>
+                            <div class="route-point end">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>景区北门</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="trip-actions">
+                        <button class="btn btn-outline-primary btn-sm" onclick="showTripDetail(2)">
+                            查看详情
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 行程详情弹窗 -->
+    <div class="modal fade" id="tripDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">行程详情</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="trip-detail-content">
+                        <div class="detail-section">
+                            <h6>基本信息</h6>
+                            <div class="detail-info">
+                                <div class="detail-item">
+                                    <span class="label">行程编号</span>
+                                    <span class="value">T20240319001</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">车辆编号</span>
+                                    <span class="value">EV2024001</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">开始时间</span>
+                                    <span class="value">2024-03-19 15:30</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">结束时间</span>
+                                    <span class="value">2024-03-19 16:45</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <h6>费用明细</h6>
+                            <div class="detail-info">
+                                <div class="detail-item">
+                                    <span class="label">起步价</span>
+                                    <span class="value">¥15.00</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">时长费</span>
+                                    <span class="value">¥15.00</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="label">里程费</span>
+                                    <span class="value">¥5.00</span>
+                                </div>
+                                <div class="detail-item total">
+                                    <span class="label">总计</span>
+                                    <span class="value">¥35.00</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <h6>行程轨迹</h6>
+                            <div class="trip-map" id="tripMap"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="downloadReceipt()">
+                        <i class="bi bi-download"></i>
+                        下载行程单
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="tabbar">
+        <a href="index.html" class="tabbar-item">
+            <i class="bi bi-house"></i>
+            <span>首页</span>
+        </a>
+        <a href="trips.html" class="tabbar-item active">
+            <i class="bi bi-clock-history"></i>
+            <span>行程</span>
+        </a>
+        <a href="profile.html" class="tabbar-item">
+            <i class="bi bi-person"></i>
+            <span>我的</span>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=1671538ab024a8dd4c3eeda22f81f3d1"></script>
+    <script>
+        // 处理返回按钮
+        document.querySelector('.nav-back').addEventListener('click', () => {
+            window.history.back();
+        });
+
+        // 处理结束行程按钮
+        document.querySelector('.end-trip-btn').addEventListener('click', () => {
+            if (confirm('确定要结束当前行程吗？')) {
+                // 这里添加结束行程的逻辑
+                window.location.reload();
+            }
+        });
+
+        // 显示行程详情
+        function showTripDetail(tripId) {
+            const modal = new bootstrap.Modal(document.getElementById('tripDetailModal'));
+            modal.show();
+
+            // 初始化地图
+            const map = new AMap.Map('tripMap', {
+                zoom: 14,
+                center: [116.397428, 39.90923]
+            });
+
+            // 这里添加轨迹绘制逻辑
+        }
+
+        // 下载行程单
+        function downloadReceipt() {
+            // 这里添加下载行程单的逻辑
+            alert('行程单下载中...');
+        }
+    </script>
+</body>
+</html> 
