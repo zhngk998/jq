@@ -218,6 +218,28 @@
         .battery-bar-inner.low {
             background: linear-gradient(90deg, #FF3B30 60%, #ffd6d6 100%);
         }
+        .home-btn {
+            position: fixed;
+            top: 60px;
+            right: 15px;
+            z-index: 1001;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -361,43 +383,54 @@
             </a>
         </div>
     </div>
+
+    <!-- 返回首页按钮 -->
+    <button class="home-btn" onclick="goHome()" title="返回系统首页">
+        <i class="bi bi-house-fill"></i>
+    </button>
+
     <script>
-    // 充电站卡片点击联动手风琴
-    function expandStation(stationName) {
-        if(stationName.includes('A区')) {
-            var collapseA = new bootstrap.Collapse(document.getElementById('collapseA'), {toggle: true});
-            collapseA.show();
-            new bootstrap.Collapse(document.getElementById('collapseB')).hide();
-            new bootstrap.Collapse(document.getElementById('collapseC')).hide();
-        } else if(stationName.includes('B区')) {
-            var collapseB = new bootstrap.Collapse(document.getElementById('collapseB'), {toggle: true});
-            collapseB.show();
-            new bootstrap.Collapse(document.getElementById('collapseA')).hide();
-            new bootstrap.Collapse(document.getElementById('collapseC')).hide();
-        } else if(stationName.includes('C区')) {
-            var collapseC = new bootstrap.Collapse(document.getElementById('collapseC'), {toggle: true});
-            collapseC.show();
-            new bootstrap.Collapse(document.getElementById('collapseA')).hide();
-            new bootstrap.Collapse(document.getElementById('collapseB')).hide();
+        // 返回系统主首页
+        function goHome() {
+            window.location.href = '../index.html';
         }
-    }
-    // 车辆详情弹窗
-    function showVehicleDetail(vehicleId) {
-        // 这里可根据vehicleId请求接口或查找数据
-        let html = '';
-        if(vehicleId==='EV-001') {
-            html = `<div><b>EV-001</b><br>所属：A区充电站<br>当前电量：75%<br>状态：充电中<br>预计完成：15分钟</div>`;
-        } else if(vehicleId==='EV-002') {
-            html = `<div><b>EV-002</b><br>所属：C区充电站<br>当前电量：20%<br>状态：待充电</div>`;
-        } else if(vehicleId==='EV-003') {
-            html = `<div><b>EV-003</b><br>所属：C区充电站<br>当前电量：100%<br>状态：已完成</div>`;
-        } else if(vehicleId==='EV-004') {
-            html = `<div><b>EV-004</b><br>所属：A区充电站<br>当前电量：60%<br>状态：充电中<br>预计完成：20分钟</div>`;
+
+        // 充电站卡片点击联动手风琴
+        function expandStation(stationName) {
+            if(stationName.includes('A区')) {
+                var collapseA = new bootstrap.Collapse(document.getElementById('collapseA'), {toggle: true});
+                collapseA.show();
+                new bootstrap.Collapse(document.getElementById('collapseB')).hide();
+                new bootstrap.Collapse(document.getElementById('collapseC')).hide();
+            } else if(stationName.includes('B区')) {
+                var collapseB = new bootstrap.Collapse(document.getElementById('collapseB'), {toggle: true});
+                collapseB.show();
+                new bootstrap.Collapse(document.getElementById('collapseA')).hide();
+                new bootstrap.Collapse(document.getElementById('collapseC')).hide();
+            } else if(stationName.includes('C区')) {
+                var collapseC = new bootstrap.Collapse(document.getElementById('collapseC'), {toggle: true});
+                collapseC.show();
+                new bootstrap.Collapse(document.getElementById('collapseA')).hide();
+                new bootstrap.Collapse(document.getElementById('collapseB')).hide();
+            }
         }
-        document.getElementById('vehicleDetailContent').innerHTML = html;
-        var modal = new bootstrap.Modal(document.getElementById('vehicleDetailModal'));
-        modal.show();
-    }
+        // 车辆详情弹窗
+        function showVehicleDetail(vehicleId) {
+            // 这里可根据vehicleId请求接口或查找数据
+            let html = '';
+            if(vehicleId==='EV-001') {
+                html = `<div><b>EV-001</b><br>所属：A区充电站<br>当前电量：75%<br>状态：充电中<br>预计完成：15分钟</div>`;
+            } else if(vehicleId==='EV-002') {
+                html = `<div><b>EV-002</b><br>所属：C区充电站<br>当前电量：20%<br>状态：待充电</div>`;
+            } else if(vehicleId==='EV-003') {
+                html = `<div><b>EV-003</b><br>所属：C区充电站<br>当前电量：100%<br>状态：已完成</div>`;
+            } else if(vehicleId==='EV-004') {
+                html = `<div><b>EV-004</b><br>所属：A区充电站<br>当前电量：60%<br>状态：充电中<br>预计完成：20分钟</div>`;
+            }
+            document.getElementById('vehicleDetailContent').innerHTML = html;
+            var modal = new bootstrap.Modal(document.getElementById('vehicleDetailModal'));
+            modal.show();
+        }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
