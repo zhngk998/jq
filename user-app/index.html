@@ -3,16 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>玛西尔景区电动车租赁系统</title>
+    <title>景区共享电动车租赁系统</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <style>
+        /* 演示按钮样式优化 */
+        .demo-controls {
+            position: fixed;
+            top: 80px;
+            right: 10px;
+            z-index: 9999;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .demo-controls:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+        }
+        
+        .demo-controls h6 {
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 12px;
+            text-align: center;
+        }
+        
+        .demo-btn {
+            display: block;
+            width: 100%;
+            margin-bottom: 8px;
+            font-size: 11px;
+            padding: 6px 10px;
+        }
+        
+        .demo-controls .btn:last-child {
+            margin-bottom: 0;
+        }
+        
+        .demo-controls.fade-out {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    </style>
 </head>
 <body>
     <!-- 顶部导航栏 -->
     <div class="custom-navbar">
         <div class="nav-content">
-            <div class="nav-title">玛西尔景区电动车租赁系统</div>
+            <div class="nav-title">景区共享电动车租赁系统</div>
         </div>
     </div>
 
@@ -72,7 +117,7 @@
             </div>
             <div class="notice-content">
                 <p>欢迎使用景区共享电动车服务</p>
-                <p>使用前请仔细阅读<a href="../index.html" class="text-link">使用说明</a></p>
+                <p>使用前请仔细阅读<a href="guide.html" class="text-link">使用说明</a></p>
             </div>
         </div>
     </div>
@@ -108,12 +153,32 @@
       已通知调度员前往现场救援
     </div>
 
+    <!-- 演示控制面板 -->
+    <div id="demoControls" class="demo-controls" style="display:none;">
+        <h6>演示功能</h6>
+        <button class="btn btn-outline-danger btn-sm demo-btn" onclick="moveVehicle(true)">
+            <i class="bi bi-exclamation-triangle"></i> 驶出围栏
+        </button>
+        <button class="btn btn-outline-success btn-sm demo-btn" onclick="moveVehicle(false,true)">
+            <i class="bi bi-arrow-return-left"></i> 调头回围栏
+        </button>
+        <button class="btn btn-outline-secondary btn-sm demo-btn" onclick="moveVehicle(false)">
+            <i class="bi bi-check-circle"></i> 恢复正常
+        </button>
+        <button class="btn btn-outline-dark btn-sm demo-btn" onclick="toggleDemoControls()">
+            <i class="bi bi-x-circle"></i> 隐藏
+        </button>
+    </div>
+
+    <!-- 加载配置文件 -->
+    <script src="../config.js"></script>
+    <!-- 加载地图API -->
+    <script src="../js/map-loader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=1671538ab024a8dd4c3eeda22f81f3d1&plugin=AMap.Scale,AMap.ToolBar,AMap.MapType"></script>
     <script src="js/main.js"></script>
     <script>
     // 伪数据：景区围栏和车辆位置
-    const fence = [[116.397,39.91],[116.398,39.91],[116.398,39.912],[116.397,39.912]]; // 示例多边形
+    const fence = CONFIG ? CONFIG.BUSINESS.FENCE.COORDINATES : [[116.397,39.91],[116.398,39.91],[116.398,39.912],[116.397,39.912]];
     let vehiclePos = {lng: 116.3975, lat: 39.911}; // 初始在围栏内
     let isOut = false, timer = null, countdown = 60;
 
@@ -181,18 +246,50 @@
       }, 3000);
     }
 
-    // 下面是按钮演示（可放在地图区域旁边）
+    // 演示控制面板
+    function toggleDemoControls() {
+        const controls = document.getElementById('demoControls');
+        if (controls.style.display === 'none') {
+            controls.style.display = 'block';
+        } else {
+            controls.classList.add('fade-out');
+            setTimeout(() => {
+                controls.style.display = 'none';
+                controls.classList.remove('fade-out');
+            }, 300);
+        }
+    }
+
+    // 页面加载完成后初始化
     window.onload = function() {
-      // 效果演示按钮
-      let btns = document.createElement('div');
-      btns.innerHTML = `
-        <div style="position:fixed;top:80px;right:10px;z-index:9999;">
-          <button class="btn btn-outline-danger mb-2" onclick="moveVehicle(true)">模拟驶出围栏</button><br>
-          <button class="btn btn-outline-success mb-2" onclick="moveVehicle(false,true)">模拟调头回围栏</button><br>
-          <button class="btn btn-outline-secondary" onclick="moveVehicle(false)">恢复正常</button>
-        </div>
-      `;
-      document.body.appendChild(btns);
+        // 检查是否启用演示功能
+        if (CONFIG && CONFIG.DEMO && CONFIG.DEMO.ENABLED) {
+            const demoControls = document.getElementById('demoControls');
+            demoControls.style.display = 'block';
+            
+            // 如果设置了自动隐藏，则定时隐藏演示按钮
+            if (CONFIG.DEMO.AUTO_HIDE_BUTTONS) {
+                setTimeout(() => {
+                    demoControls.classList.add('fade-out');
+                    setTimeout(() => {
+                        demoControls.style.display = 'none';
+                        demoControls.classList.remove('fade-out');
+                    }, 300);
+                }, CONFIG.DEMO.DEMO_TIMEOUT || 30000);
+            }
+        }
+        
+        // 加载地图API
+        if (window.MapLoader) {
+            window.MapLoader.loadMapAPI(['AMap.Scale', 'AMap.ToolBar', 'AMap.MapType'])
+                .then(() => {
+                    console.log('地图API加载成功');
+                    // 这里可以初始化地图
+                })
+                .catch(error => {
+                    console.error('地图API加载失败:', error);
+                });
+        }
     };
     </script>
 </body>

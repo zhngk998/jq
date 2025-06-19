@@ -679,6 +679,24 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=1671538ab024a8dd4c3eeda22f81f3d1&plugin=AMap.Scale,AMap.ToolBar,AMap.MapType"></script>
+    <!-- 加载配置文件 -->
+    <script src="../config.js"></script>
+    <!-- 加载地图API -->
+    <script src="../js/map-loader.js"></script>
+    <script>
+        // 页面加载完成后初始化地图
+        window.onload = function() {
+            if (window.MapLoader) {
+                window.MapLoader.loadMapAPI(['AMap.MarkerClusterer'])
+                    .then(() => {
+                        console.log('调度端地图API加载成功');
+                        // 这里可以初始化调度端地图
+                    })
+                    .catch(error => {
+                        console.error('地图API加载失败:', error);
+                    });
+            }
+        };
+    </script>
 </body>
 </html> 
