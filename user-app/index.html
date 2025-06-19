@@ -177,10 +177,101 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/main.js"></script>
     <script>
+    // 全局变量
+    let map = null;
+    let vehicleMarker = null;
+    let fencePolygon = null;
+    
     // 伪数据：景区围栏和车辆位置
     const fence = CONFIG ? CONFIG.BUSINESS.FENCE.COORDINATES : [[116.397,39.91],[116.398,39.91],[116.398,39.912],[116.397,39.912]];
     let vehiclePos = {lng: 116.3975, lat: 39.911}; // 初始在围栏内
     let isOut = false, timer = null, countdown = 60;
+
+    // 初始化地图
+    function initMap() {
+        if (!window.AMap) {
+            console.error('高德地图API未加载');
+            return;
+        }
+
+        // 创建地图实例
+        map = new AMap.Map('map', {
+            zoom: 15,
+            center: [116.3975, 39.911],
+            mapStyle: 'amap://styles/normal'
+        });
+
+        // 添加地图控件
+        map.addControl(new AMap.Scale());
+        map.addControl(new AMap.ToolBar());
+        map.addControl(new AMap.MapType());
+
+        // 绘制围栏
+        fencePolygon = new AMap.Polygon({
+            path: fence,
+            strokeColor: '#FF0000',
+            strokeWeight: 2,
+            strokeOpacity: 0.8,
+            fillColor: '#FF0000',
+            fillOpacity: 0.1
+        });
+        map.add(fencePolygon);
+
+        // 添加车辆标记
+        vehicleMarker = new AMap.Marker({
+            position: [vehiclePos.lng, vehiclePos.lat],
+            icon: new AMap.Icon({
+                size: new AMap.Size(32, 32),
+                image: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDJMMjggMTJWMjZIMjBWMjhIMTJWMjZINFYxMkwxNiAyWiIgZmlsbD0iIzAwN0FGRiIvPgo8L3N2Zz4K',
+                imageSize: new AMap.Size(32, 32)
+            }),
+            title: '当前车辆位置'
+        });
+        map.add(vehicleMarker);
+
+        // 添加一些模拟的车辆点
+        const mockVehicles = [
+            {lng: 116.3972, lat: 39.9105, status: 'available'},
+            {lng: 116.3978, lat: 39.9115, status: 'available'},
+            {lng: 116.3975, lat: 39.9120, status: 'available'},
+            {lng: 116.3980, lat: 39.9102, status: 'available'}
+        ];
+
+        mockVehicles.forEach((vehicle, index) => {
+            const marker = new AMap.Marker({
+                position: [vehicle.lng, vehicle.lat],
+                icon: new AMap.Icon({
+                    size: new AMap.Size(24, 24),
+                    image: `data:image/svg+xml;base64,${getVehicleIcon(vehicle.status)}`,
+                    imageSize: new AMap.Size(24, 24)
+                }),
+                title: `车辆${index + 1} - ${getStatusText(vehicle.status)}`
+            });
+            map.add(marker);
+        });
+
+        console.log('地图初始化完成');
+    }
+
+    // 获取车辆图标
+    function getVehicleIcon(status) {
+        const icons = {
+            available: 'PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiMzNEM3NTkiLz4KPHBhdGggZD0iTTggMTJMMTIgOEwxNiAxMkwxMiAxNkw4IDEyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+',
+            charging: 'PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiNGRjk1MDAiLz4KPHBhdGggZD0iTTEyIDZMMTQgMTJIMThMMTYgMThMMTIgMTJINiI+PC9wYXRoPgo8L3N2Zz4=',
+            maintenance: 'PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIGZpbGw9IiNGRjNCMzAiLz4KPHBhdGggZD0iTTEyIDhMMTQgMTJIMThMMTYgMThMMTIgMTRINiI+PC9wYXRoPgo8L3N2Zz4='
+        };
+        return icons[status] || icons.available;
+    }
+
+    // 获取状态文本
+    function getStatusText(status) {
+        const texts = {
+            available: '可用',
+            charging: '充电中',
+            maintenance: '维护中'
+        };
+        return texts[status] || '未知';
+    }
 
     // 伪函数：判断是否在围栏内
     function isInFence(pos) {
@@ -192,10 +283,12 @@
     function moveVehicle(outside = false, towardFence = false) {
       clearInterval(timer);
       countdown = 60;
+      
       if (outside) {
         // 模拟车辆驶出围栏
         vehiclePos.lng = 116.3982;
         vehiclePos.lat = 39.911;
+        updateVehicleMarker();
         showAlarm();
         timer = setInterval(() => {
           countdown--;
@@ -209,6 +302,7 @@
         // 模拟车辆调头回围栏
         vehiclePos.lng = 116.3975;
         vehiclePos.lat = 39.911;
+        updateVehicleMarker();
         hideAlarm();
         clearInterval(timer);
         countdown = 60;
@@ -216,10 +310,19 @@
         // 正常行驶
         vehiclePos.lng = 116.3975;
         vehiclePos.lat = 39.911;
+        updateVehicleMarker();
         hideAlarm();
         clearInterval(timer);
         countdown = 60;
       }
+    }
+
+    // 更新车辆标记位置
+    function updateVehicleMarker() {
+        if (vehicleMarker && map) {
+            vehicleMarker.setPosition([vehiclePos.lng, vehiclePos.lat]);
+            map.setCenter([vehiclePos.lng, vehiclePos.lat]);
+        }
     }
 
     // 报警弹窗
@@ -260,6 +363,26 @@
         }
     }
 
+    // 地图控制按钮
+    function locateUser() {
+        if (map) {
+            map.setCenter([vehiclePos.lng, vehiclePos.lat]);
+            map.setZoom(16);
+        }
+    }
+
+    function zoomIn() {
+        if (map) {
+            map.setZoom(map.getZoom() + 1);
+        }
+    }
+
+    function zoomOut() {
+        if (map) {
+            map.setZoom(map.getZoom() - 1);
+        }
+    }
+
     // 页面加载完成后初始化
     window.onload = function() {
         // 检查是否启用演示功能
@@ -284,12 +407,17 @@
             window.MapLoader.loadMapAPI(['AMap.Scale', 'AMap.ToolBar', 'AMap.MapType'])
                 .then(() => {
                     console.log('地图API加载成功');
-                    // 这里可以初始化地图
+                    initMap(); // 初始化地图
                 })
                 .catch(error => {
                     console.error('地图API加载失败:', error);
                 });
         }
+
+        // 绑定地图控制按钮事件
+        document.getElementById('locateBtn').addEventListener('click', locateUser);
+        document.getElementById('zoomInBtn').addEventListener('click', zoomIn);
+        document.getElementById('zoomOutBtn').addEventListener('click', zoomOut);
     };
     </script>
 </body>
