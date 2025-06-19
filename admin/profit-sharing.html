@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>分账管理 - 后台管理系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; }
+        .nav-tabs .nav-link.active { background: #fff; border-bottom: 2px solid #0d6efd; }
+        .tab-content { background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px #0001; }
+        .table th, .table td { vertical-align: middle; }
+    </style>
+</head>
+<body>
+<div class="container my-4">
+    <h3 class="mb-4"><i class="bi bi-cash-coin"></i> 分账管理</h3>
+    <ul class="nav nav-tabs mb-3" id="tabMenu" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="mode-tab" data-bs-toggle="tab" data-bs-target="#mode" type="button" role="tab">分账模式设置</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="detail-tab" data-bs-toggle="tab" data-bs-target="#detail" type="button" role="tab">分账明细</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="stat-tab" data-bs-toggle="tab" data-bs-target="#stat" type="button" role="tab">分账统计</button>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <!-- 分账模式设置 -->
+        <div class="tab-pane fade show active" id="mode" role="tabpanel">
+            <h5>分账模式设置</h5>
+            <form class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">景区</label>
+                    <select class="form-select">
+                        <option>景区A</option>
+                        <option>景区B</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">分账方</label>
+                    <select class="form-select">
+                        <option>景区</option>
+                        <option>运营商</option>
+                        <option>合伙人</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">分账模式</label>
+                    <select class="form-select" id="modeType" onchange="onModeTypeChange()">
+                        <option value="ratio">按比例</option>
+                        <option value="fixed">固定金额</option>
+                        <option value="ladder">阶梯分账</option>
+                    </select>
+                </div>
+                <div class="col-md-3" id="modeValueBox">
+                    <label class="form-label">分账比例(%)</label>
+                    <input type="number" class="form-control" placeholder="如60" min="0" max="100">
+                </div>
+                <!-- 阶梯分账输入区域，默认隐藏 -->
+                <div class="col-md-12" id="ladderBox" style="display:none;">
+                    <label class="form-label">阶梯规则（示例：0-10000元 60%，10000元以上 70%）</label>
+                    <textarea class="form-control" rows="2" placeholder="请输入阶梯分账规则"></textarea>
+                </div>
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary">保存设置</button>
+                </div>
+            </form>
+            <h6 class="mt-4">当前分账设置</h6>
+            <table class="table table-bordered table-sm">
+                <thead>
+                <tr>
+                    <th>景区</th>
+                    <th>分账方</th>
+                    <th>分账模式</th>
+                    <th>分账参数</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>景区A</td>
+                    <td>景区</td>
+                    <td>按比例</td>
+                    <td>60%</td>
+                    <td><button class="btn btn-sm btn-outline-secondary">编辑</button></td>
+                </tr>
+                <tr>
+                    <td>景区A</td>
+                    <td>运营商</td>
+                    <td>固定金额</td>
+                    <td>每单5元</td>
+                    <td><button class="btn btn-sm btn-outline-secondary">编辑</button></td>
+                </tr>
+                <tr>
+                    <td>景区A</td>
+                    <td>合伙人</td>
+                    <td>阶梯分账</td>
+                    <td>0-10000元 10%，10000元以上 15%</td>
+                    <td><button class="btn btn-sm btn-outline-secondary">编辑</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- 分账明细 -->
+        <div class="tab-pane fade" id="detail" role="tabpanel">
+            <h5>分账明细</h5>
+            <form class="row g-2 mb-3">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="订单号">
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option>全部分账方</option>
+                        <option>景区</option>
+                        <option>运营商</option>
+                        <option>合伙人</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-outline-primary">查询</button>
+                    <button type="button" class="btn btn-outline-secondary">导出</button>
+                </div>
+            </form>
+            <table class="table table-bordered table-sm">
+                <thead>
+                <tr>
+                    <th>订单号</th>
+                    <th>分账方</th>
+                    <th>总金额</th>
+                    <th>分账金额</th>
+                    <th>分账时间</th>
+                    <th>状态</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>202406010001</td>
+                    <td>景区</td>
+                    <td>100元</td>
+                    <td>60元</td>
+                    <td>2024-06-01 10:00</td>
+                    <td><span class="badge bg-success">已结算</span></td>
+                </tr>
+                <tr>
+                    <td>202406010001</td>
+                    <td>运营商</td>
+                    <td>100元</td>
+                    <td>5元</td>
+                    <td>2024-06-01 10:00</td>
+                    <td><span class="badge bg-success">已结算</span></td>
+                </tr>
+                <tr>
+                    <td>202406010001</td>
+                    <td>合伙人</td>
+                    <td>100元</td>
+                    <td>10元</td>
+                    <td>2024-06-01 10:00</td>
+                    <td><span class="badge bg-warning text-dark">未结算</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- 分账统计 -->
+        <div class="tab-pane fade" id="stat" role="tabpanel">
+            <h5>分账统计</h5>
+            <form class="row g-2 mb-3">
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option>全部分账方</option>
+                        <option>景区</option>
+                        <option>运营商</option>
+                        <option>合伙人</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="month" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-outline-primary">统计</button>
+                    <button type="button" class="btn btn-outline-secondary">导出</button>
+                </div>
+            </form>
+            <table class="table table-bordered table-sm">
+                <thead>
+                <tr>
+                    <th>分账方</th>
+                    <th>分账总额</th>
+                    <th>订单数</th>
+                    <th>已结算</th>
+                    <th>未结算</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>景区</td>
+                    <td>12000元</td>
+                    <td>200</td>
+                    <td>11000元</td>
+                    <td>1000元</td>
+                </tr>
+                <tr>
+                    <td>运营商</td>
+                    <td>3000元</td>
+                    <td>200</td>
+                    <td>2900元</td>
+                    <td>100元</td>
+                </tr>
+                <tr>
+                    <td>合伙人</td>
+                    <td>2500元</td>
+                    <td>200</td>
+                    <td>2000元</td>
+                    <td>500元</td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- 统计图表占位 -->
+            <div class="mt-4">
+                <div style="height:200px;background:#f1f3f4;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#888;">
+                    <span>（此处可集成分账趋势/占比图表）</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function onModeTypeChange() {
+    var type = document.getElementById('modeType').value;
+    document.getElementById('modeValueBox').style.display = (type === 'ladder') ? 'none' : '';
+    document.getElementById('ladderBox').style.display = (type === 'ladder') ? '' : 'none';
+}
+</script>
+</body>
+</html> 

@@ -103,7 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 'vehicle-manage-section', 
                 'dispatch-section',
                 'income-section',
-                'report-section'
+                'report-section',
+                'profit-sharing-section'
             ];
             
             sections.forEach(sectionId => {
@@ -132,6 +133,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
                 case 'report':
                     targetSectionId = 'report-section';
+                    break;
+                case 'profit-sharing':
+                    targetSectionId = 'profit-sharing-section';
                     break;
             }
             

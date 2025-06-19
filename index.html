@@ -93,8 +93,107 @@
         </a>
     </div>
 
+    <!-- 报警弹窗 -->
+    <div id="alarmModal" class="modal" tabindex="-1" style="display:none; background:rgba(0,0,0,0.5); position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;">
+      <div style="background:#fff;padding:30px 20px;border-radius:10px;max-width:300px;margin:100px auto;text-align:center;">
+        <h5 style="color:red;">⚠️ 超出围栏范围！</h5>
+        <p>请立即驶回景区范围内，否则车辆将自动锁定。</p>
+        <p id="countdownText" style="color:#f60;font-weight:bold;"></p>
+        <button onclick="closeAlarm()" class="btn btn-danger">我知道了</button>
+      </div>
+    </div>
+
+    <!-- 调度通知提示 -->
+    <div id="dispatchNotice" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#ffc107;padding:12px 24px;border-radius:8px;z-index:9999;">
+      已通知调度员前往现场救援
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=1671538ab024a8dd4c3eeda22f81f3d1&plugin=AMap.Scale,AMap.ToolBar,AMap.MapType"></script>
     <script src="js/main.js"></script>
+    <script>
+    // 伪数据：景区围栏和车辆位置
+    const fence = [[116.397,39.91],[116.398,39.91],[116.398,39.912],[116.397,39.912]]; // 示例多边形
+    let vehiclePos = {lng: 116.3975, lat: 39.911}; // 初始在围栏内
+    let isOut = false, timer = null, countdown = 60;
+
+    // 伪函数：判断是否在围栏内
+    function isInFence(pos) {
+      // 这里只做简单判断，实际用高德API
+      return pos.lng > 116.397 && pos.lng < 116.398 && pos.lat > 39.91 && pos.lat < 39.912;
+    }
+
+    // 伪函数：模拟车辆移动
+    function moveVehicle(outside = false, towardFence = false) {
+      clearInterval(timer);
+      countdown = 60;
+      if (outside) {
+        // 模拟车辆驶出围栏
+        vehiclePos.lng = 116.3982;
+        vehiclePos.lat = 39.911;
+        showAlarm();
+        timer = setInterval(() => {
+          countdown--;
+          document.getElementById('countdownText').innerText = `距离锁车倒计时：${countdown}秒`;
+          if (countdown <= 0) {
+            lockVehicle();
+            clearInterval(timer);
+          }
+        }, 1000);
+      } else if (towardFence) {
+        // 模拟车辆调头回围栏
+        vehiclePos.lng = 116.3975;
+        vehiclePos.lat = 39.911;
+        hideAlarm();
+        clearInterval(timer);
+        countdown = 60;
+      } else {
+        // 正常行驶
+        vehiclePos.lng = 116.3975;
+        vehiclePos.lat = 39.911;
+        hideAlarm();
+        clearInterval(timer);
+        countdown = 60;
+      }
+    }
+
+    // 报警弹窗
+    function showAlarm() {
+      document.getElementById('alarmModal').style.display = 'block';
+      document.getElementById('countdownText').innerText = `距离锁车倒计时：${countdown}秒`;
+      // 播放报警声音
+      // new Audio('alarm.mp3').play(); // 仅展示
+    }
+    function hideAlarm() {
+      document.getElementById('alarmModal').style.display = 'none';
+      clearInterval(timer);
+    }
+    function closeAlarm() {
+      hideAlarm();
+    }
+
+    // 锁车与调度通知
+    function lockVehicle() {
+      hideAlarm();
+      document.getElementById('dispatchNotice').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('dispatchNotice').style.display = 'none';
+      }, 3000);
+    }
+
+    // 下面是按钮演示（可放在地图区域旁边）
+    window.onload = function() {
+      // 效果演示按钮
+      let btns = document.createElement('div');
+      btns.innerHTML = `
+        <div style="position:fixed;top:80px;right:10px;z-index:9999;">
+          <button class="btn btn-outline-danger mb-2" onclick="moveVehicle(true)">模拟驶出围栏</button><br>
+          <button class="btn btn-outline-success mb-2" onclick="moveVehicle(false,true)">模拟调头回围栏</button><br>
+          <button class="btn btn-outline-secondary" onclick="moveVehicle(false)">恢复正常</button>
+        </div>
+      `;
+      document.body.appendChild(btns);
+    };
+    </script>
 </body>
 </html> 
