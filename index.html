@@ -2,198 +2,104 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>玛西尔景区电动车租赁系统</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>景区共享电动车系统</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .app-links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .app-link {
+            display: block;
+            padding: 15px 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .app-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+        .app-link.admin {
+            background: linear-gradient(45deg, #f093fb, #f5576c);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
+        .app-link.admin:hover {
+            box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+        }
+        .app-link.dispatch {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+        .app-link.dispatch:hover {
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+        .description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
-    <!-- 顶部导航栏 -->
-    <div class="custom-navbar">
-        <div class="nav-content">
-            <div class="nav-title">玛西尔景区电动车租赁系统</div>
+    <div class="container">
+        <h1>🚲 景区共享电动车系统</h1>
+        <p class="description">
+            欢迎使用景区共享电动车租赁系统<br>
+            请选择您要使用的功能模块
+        </p>
+        
+        <div class="app-links">
+            <a href="user-app/index.html" class="app-link">
+                <span class="icon">📱</span>
+                用户端小程序
+            </a>
+            <a href="dispatch/index.html" class="app-link dispatch">
+                <span class="icon">🚗</span>
+                调度端管理系统
+            </a>
+            <a href="admin/index.html" class="app-link admin">
+                <span class="icon">⚙️</span>
+                后台管理系统
+            </a>
         </div>
     </div>
-
-    <!-- 主要内容区域 -->
-    <div class="main-container">
-        <!-- 地图区域 -->
-        <div class="map-container">
-            <div id="map" class="map"></div>
-            <div class="map-controls">
-                <button class="map-control-btn" id="locateBtn">
-                    <i class="bi bi-geo-alt"></i>
-                </button>
-                <button class="map-control-btn" id="zoomInBtn">
-                    <i class="bi bi-plus"></i>
-                </button>
-                <button class="map-control-btn" id="zoomOutBtn">
-                    <i class="bi bi-dash"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- 快捷功能区 -->
-        <div class="quick-actions">
-            <div class="row g-2">
-                <div class="col-4">
-                    <a href="scan.html" class="action-card">
-                        <div class="action-icon">
-                            <i class="bi bi-qr-code-scan"></i>
-                        </div>
-                        <span>扫码用车</span>
-                    </a>
-                </div>
-                <div class="col-4">
-                    <a href="trips.html" class="action-card">
-                        <div class="action-icon">
-                            <i class="bi bi-clock-history"></i>
-                        </div>
-                        <span>我的行程</span>
-                    </a>
-                </div>
-                <div class="col-4">
-                    <a href="emergency.html" class="action-card">
-                        <div class="action-icon">
-                            <i class="bi bi-telephone"></i>
-                        </div>
-                        <span>紧急求助</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- 公告区域 -->
-        <div class="notice-board">
-            <div class="notice-header">
-                <i class="bi bi-megaphone"></i>
-                <h5>景区公告</h5>
-            </div>
-            <div class="notice-content">
-                <p>欢迎使用景区共享电动车服务</p>
-                <p>使用前请仔细阅读<a href="guide.html" class="text-link">使用说明</a></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- 底部导航栏 -->
-    <div class="tabbar">
-        <a href="index.html" class="tabbar-item active">
-            <i class="bi bi-house-fill"></i>
-            <span>首页</span>
-        </a>
-        <a href="trips.html" class="tabbar-item">
-            <i class="bi bi-clock-history"></i>
-            <span>行程</span>
-        </a>
-        <a href="profile.html" class="tabbar-item">
-            <i class="bi bi-person"></i>
-            <span>我的</span>
-        </a>
-    </div>
-
-    <!-- 报警弹窗 -->
-    <div id="alarmModal" class="modal" tabindex="-1" style="display:none; background:rgba(0,0,0,0.5); position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;">
-      <div style="background:#fff;padding:30px 20px;border-radius:10px;max-width:300px;margin:100px auto;text-align:center;">
-        <h5 style="color:red;">⚠️ 超出围栏范围！</h5>
-        <p>请立即驶回景区范围内，否则车辆将自动锁定。</p>
-        <p id="countdownText" style="color:#f60;font-weight:bold;"></p>
-        <button onclick="closeAlarm()" class="btn btn-danger">我知道了</button>
-      </div>
-    </div>
-
-    <!-- 调度通知提示 -->
-    <div id="dispatchNotice" style="display:none;position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#ffc107;padding:12px 24px;border-radius:8px;z-index:9999;">
-      已通知调度员前往现场救援
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=1671538ab024a8dd4c3eeda22f81f3d1&plugin=AMap.Scale,AMap.ToolBar,AMap.MapType"></script>
-    <script src="js/main.js"></script>
-    <script>
-    // 伪数据：景区围栏和车辆位置
-    const fence = [[116.397,39.91],[116.398,39.91],[116.398,39.912],[116.397,39.912]]; // 示例多边形
-    let vehiclePos = {lng: 116.3975, lat: 39.911}; // 初始在围栏内
-    let isOut = false, timer = null, countdown = 60;
-
-    // 伪函数：判断是否在围栏内
-    function isInFence(pos) {
-      // 这里只做简单判断，实际用高德API
-      return pos.lng > 116.397 && pos.lng < 116.398 && pos.lat > 39.91 && pos.lat < 39.912;
-    }
-
-    // 伪函数：模拟车辆移动
-    function moveVehicle(outside = false, towardFence = false) {
-      clearInterval(timer);
-      countdown = 60;
-      if (outside) {
-        // 模拟车辆驶出围栏
-        vehiclePos.lng = 116.3982;
-        vehiclePos.lat = 39.911;
-        showAlarm();
-        timer = setInterval(() => {
-          countdown--;
-          document.getElementById('countdownText').innerText = `距离锁车倒计时：${countdown}秒`;
-          if (countdown <= 0) {
-            lockVehicle();
-            clearInterval(timer);
-          }
-        }, 1000);
-      } else if (towardFence) {
-        // 模拟车辆调头回围栏
-        vehiclePos.lng = 116.3975;
-        vehiclePos.lat = 39.911;
-        hideAlarm();
-        clearInterval(timer);
-        countdown = 60;
-      } else {
-        // 正常行驶
-        vehiclePos.lng = 116.3975;
-        vehiclePos.lat = 39.911;
-        hideAlarm();
-        clearInterval(timer);
-        countdown = 60;
-      }
-    }
-
-    // 报警弹窗
-    function showAlarm() {
-      document.getElementById('alarmModal').style.display = 'block';
-      document.getElementById('countdownText').innerText = `距离锁车倒计时：${countdown}秒`;
-      // 播放报警声音
-      // new Audio('alarm.mp3').play(); // 仅展示
-    }
-    function hideAlarm() {
-      document.getElementById('alarmModal').style.display = 'none';
-      clearInterval(timer);
-    }
-    function closeAlarm() {
-      hideAlarm();
-    }
-
-    // 锁车与调度通知
-    function lockVehicle() {
-      hideAlarm();
-      document.getElementById('dispatchNotice').style.display = 'block';
-      setTimeout(() => {
-        document.getElementById('dispatchNotice').style.display = 'none';
-      }, 3000);
-    }
-
-    // 下面是按钮演示（可放在地图区域旁边）
-    window.onload = function() {
-      // 效果演示按钮
-      let btns = document.createElement('div');
-      btns.innerHTML = `
-        <div style="position:fixed;top:80px;right:10px;z-index:9999;">
-          <button class="btn btn-outline-danger mb-2" onclick="moveVehicle(true)">模拟驶出围栏</button><br>
-          <button class="btn btn-outline-success mb-2" onclick="moveVehicle(false,true)">模拟调头回围栏</button><br>
-          <button class="btn btn-outline-secondary" onclick="moveVehicle(false)">恢复正常</button>
-        </div>
-      `;
-      document.body.appendChild(btns);
-    };
-    </script>
 </body>
 </html> 
