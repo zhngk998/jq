@@ -3,102 +3,467 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>景区共享电动车系统</title>
+    <title>景区共享电动车系统 - 完整解决方案</title>
     <style>
-        body {
-            font-family: 'Microsoft YaHei', sans-serif;
+        * {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            color: #333;
+            line-height: 1.6;
         }
-        .container {
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .hero-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .hero-description {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
             background: white;
             border-radius: 15px;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            text-align: center;
-            max-width: 500px;
-            width: 100%;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        h1 {
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .feature-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .feature-description {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            color: #555;
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .modules-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 28px;
             color: #333;
             margin-bottom: 30px;
-            font-size: 28px;
+            text-align: center;
         }
-        .app-links {
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+        
+        .module-card {
+            border: 2px solid #f0f0f0;
+            border-radius: 15px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .module-card:hover {
+            border-color: #667eea;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.2);
+        }
+        
+        .module-card.user {
+            border-color: #28a745;
+        }
+        
+        .module-card.user:hover {
+            border-color: #28a745;
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.2);
+        }
+        
+        .module-card.dispatch {
+            border-color: #17a2b8;
+        }
+        
+        .module-card.dispatch:hover {
+            border-color: #17a2b8;
+            box-shadow: 0 10px 25px rgba(23, 162, 184, 0.2);
+        }
+        
+        .module-card.admin {
+            border-color: #dc3545;
+        }
+        
+        .module-card.admin:hover {
+            border-color: #dc3545;
+            box-shadow: 0 10px 25px rgba(220, 53, 69, 0.2);
+        }
+        
+        .module-header {
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
+            align-items: center;
+            margin-bottom: 20px;
         }
-        .app-link {
-            display: block;
-            padding: 15px 20px;
+        
+        .module-icon {
+            font-size: 36px;
+            margin-right: 15px;
+        }
+        
+        .module-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .module-description {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .module-features {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 25px;
+        }
+        
+        .module-features li {
+            padding: 5px 0;
+            color: #555;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .module-features li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .module-link {
+            display: inline-block;
+            padding: 12px 25px;
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             text-decoration: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 25px;
             font-weight: 500;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
         }
-        .app-link:hover {
+        
+        .module-link:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
             color: white;
             text-decoration: none;
         }
-        .app-link.admin {
-            background: linear-gradient(45deg, #f093fb, #f5576c);
-            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        
+        .module-link.user {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
-        .app-link.admin:hover {
-            box-shadow: 0 6px 20px rgba(240, 147, 251, 0.4);
+        
+        .module-link.user:hover {
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
         }
-        .app-link.dispatch {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        
+        .module-link.dispatch {
+            background: linear-gradient(45deg, #17a2b8, #6f42c1);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
         }
-        .app-link.dispatch:hover {
-            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        
+        .module-link.dispatch:hover {
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
         }
-        .description {
+        
+        .module-link.admin {
+            background: linear-gradient(45deg, #dc3545, #fd7e14);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .module-link.admin:hover {
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px 0;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .footer p {
             color: #666;
-            margin-bottom: 20px;
-            line-height: 1.6;
+            margin-bottom: 10px;
         }
-        .icon {
-            margin-right: 10px;
-            font-size: 18px;
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .hero-title {
+                font-size: 28px;
+            }
+            
+            .hero-description {
+                font-size: 16px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🚲 景区共享电动车系统</h1>
-        <p class="description">
-            欢迎使用景区共享电动车租赁系统<br>
-            请选择您要使用的功能模块
-        </p>
-        
-        <div class="app-links">
-            <a href="user-app/index.html" class="app-link">
-                <span class="icon">📱</span>
-                用户端小程序
-            </a>
-            <a href="dispatch/index.html" class="app-link dispatch">
-                <span class="icon">🚗</span>
-                调度端管理系统
-            </a>
-            <a href="admin/index.html" class="app-link admin">
-                <span class="icon">⚙️</span>
-                后台管理系统
-            </a>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="header-content">
+            <h1>🚲 景区共享电动车系统</h1>
+            <p class="subtitle">完整的景区共享电动车租赁管理解决方案</p>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- 英雄区域 -->
+        <div class="hero-section">
+            <h1 class="hero-title">智能景区共享电动车租赁系统</h1>
+            <p class="hero-description">
+                专为景区打造的现代化共享电动车租赁管理系统，集成用户端小程序、调度端管理系统和后台运营管理平台，
+                提供从用户租车到运营管理的全流程数字化解决方案。系统采用响应式设计，支持多端访问，助力景区提升服务质量和运营效率。
+            </p>
+        </div>
+
+        <!-- 核心功能特色 -->
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">📱</span>
+                <h3 class="feature-title">用户端小程序</h3>
+                <p class="feature-description">便捷的移动端租车体验</p>
+                <ul class="feature-list">
+                    <li>扫码快速租车</li>
+                    <li>实时车辆定位</li>
+                    <li>行程记录管理</li>
+                    <li>在线支付结算</li>
+                    <li>紧急求助功能</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">🚗</span>
+                <h3 class="feature-title">调度端管理</h3>
+                <p class="feature-description">高效的车辆调度运营</p>
+                <ul class="feature-list">
+                    <li>实时任务分配</li>
+                    <li>车辆位置监控</li>
+                    <li>充电站管理</li>
+                    <li>故障处理调度</li>
+                    <li>运营数据统计</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <span class="feature-icon">⚙️</span>
+                <h3 class="feature-title">后台管理系统</h3>
+                <p class="feature-description">全面的运营管理平台</p>
+                <ul class="feature-list">
+                    <li>运营数据大屏</li>
+                    <li>车辆信息管理</li>
+                    <li>收入回款管理</li>
+                    <li>财务报表分析</li>
+                    <li>系统配置管理</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 系统模块 -->
+        <div class="modules-section">
+            <h2 class="section-title">系统模块详细介绍</h2>
+            <div class="modules-grid">
+                <!-- 用户端模块 -->
+                <div class="module-card user">
+                    <div class="module-header">
+                        <span class="module-icon">📱</span>
+                        <h3 class="module-title">用户端小程序</h3>
+                    </div>
+                    <p class="module-description">
+                        专为游客设计的移动端应用，提供便捷的租车服务体验。界面简洁美观，操作简单直观。
+                    </p>
+                    <ul class="module-features">
+                        <li>扫码租车：扫描车辆二维码快速租车</li>
+                        <li>车辆详情：查看车辆信息、电量、位置等</li>
+                        <li>行程记录：历史订单和消费明细查询</li>
+                        <li>个人中心：用户信息管理和设置</li>
+                        <li>使用指南：详细的使用说明和注意事项</li>
+                        <li>紧急联系：快速联系客服和紧急求助</li>
+                    </ul>
+                    <a href="user-app/index.html" class="module-link user">体验用户端</a>
+                </div>
+
+                <!-- 调度端模块 -->
+                <div class="module-card dispatch">
+                    <div class="module-header">
+                        <span class="module-icon">🚗</span>
+                        <h3 class="module-title">调度端管理系统</h3>
+                    </div>
+                    <p class="module-description">
+                        为调度员提供的工作平台，实现车辆调度、任务分配、实时监控等核心功能。
+                    </p>
+                    <ul class="module-features">
+                        <li>任务管理：调度任务分配和状态跟踪</li>
+                        <li>实时地图：车辆位置和状态实时监控</li>
+                        <li>充电管理：充电站状态和充电调度</li>
+                        <li>故障处理：车辆故障报修和处理流程</li>
+                        <li>个人中心：调度员信息和工作统计</li>
+                        <li>消息通知：重要消息和任务提醒</li>
+                    </ul>
+                    <a href="dispatch/index.html" class="module-link dispatch">体验调度端</a>
+                </div>
+
+                <!-- 后台管理模块 -->
+                <div class="module-card admin">
+                    <div class="module-header">
+                        <span class="module-icon">⚙️</span>
+                        <h3 class="module-title">后台管理系统</h3>
+                    </div>
+                    <p class="module-description">
+                        面向管理人员的综合运营平台，提供数据统计、车辆管理、财务管理等核心功能。
+                    </p>
+                    <ul class="module-features">
+                        <li>运营概览：实时数据大屏和趋势分析</li>
+                        <li>车辆管理：车辆注册、状态管理、详情查看</li>
+                        <li>调度指令：实时监控、指令管理、智能推荐</li>
+                        <li>收入回款：收入统计、回款管理、退款处理</li>
+                        <li>财务报表：多维度财务分析和报表导出</li>
+                        <li>系统设置：用户权限、系统配置管理</li>
+                    </ul>
+                    <a href="admin/index.html" class="module-link admin">体验后台管理</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer">
+        <div class="footer-content">
+            <p><strong>景区共享电动车租赁系统</strong> - 完整的数字化解决方案</p>
+            <p>支持多端访问 | 响应式设计 | 现代化界面 | 完整功能演示</p>
+            <p>© 2024 景区共享电动车系统. 专为景区打造的智能租赁管理平台</p>
         </div>
     </div>
 </body>
